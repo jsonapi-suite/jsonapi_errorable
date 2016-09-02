@@ -26,6 +26,8 @@ RSpec.describe JsonapiErrorable::Serializers::ValidationSerializer do
         expect(subject).to eq(
           [
             {
+              code:  'unprocessable_entity',
+              status: '422',
               title: "Validation Error",
               detail: "Username can't be blank",
               source: { pointer: '/data/attributes/username' },
@@ -46,6 +48,8 @@ RSpec.describe JsonapiErrorable::Serializers::ValidationSerializer do
         expect(subject).to eq(
           [
             {
+              code:  'unprocessable_entity',
+              status: '422',
               title: 'Validation Error',
               detail: 'Pets is invalid',
               source: { pointer: '/data/relationships/pets' },
@@ -65,6 +69,8 @@ RSpec.describe JsonapiErrorable::Serializers::ValidationSerializer do
           expect(subject).to eq(
             [
               {
+                code:  'unprocessable_entity',
+                status: '422',
                 title: 'Validation Error',
                 detail: 'Pets is invalid',
                 source: { pointer: '/data/attributes/pets' },
@@ -83,6 +89,8 @@ RSpec.describe JsonapiErrorable::Serializers::ValidationSerializer do
             expect(subject).to eq(
               [
                 {
+                  code:  'unprocessable_entity',
+                  status: '422',
                   title: 'Validation Error',
                   detail: 'Pets is invalid',
                   source: { pointer: '/data/relationships/pets' },
@@ -106,6 +114,8 @@ RSpec.describe JsonapiErrorable::Serializers::ValidationSerializer do
         expect(subject).to eq(
           [
             {
+              code:  'unprocessable_entity',
+              status: '422',
               title: 'Validation Error',
               detail: 'Foo.bar is invalid',
               source: { pointer: '/data/relationships/foo.bar' },
