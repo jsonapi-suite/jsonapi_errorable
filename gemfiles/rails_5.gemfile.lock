@@ -1,7 +1,7 @@
 PATH
   remote: ../
   specs:
-    jsonapi_errorable (0.1.0)
+    jsonapi_errorable (0.1.1)
       active_model_serializers (~> 0.10)
       rails (>= 4.1, < 6)
 
