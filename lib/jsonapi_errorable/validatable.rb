@@ -4,7 +4,7 @@ module JsonapiErrorable
       render \
         json: record,
         status: :unprocessable_entity,
-        serializer: Serializers::ValidationSerializer,
+        serializer: Serializers::SerializableValidation,
         adapter: :attributes
     end
   end

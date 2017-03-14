@@ -1,8 +1,9 @@
-require 'active_model_serializers'
+require 'jsonapi/serializable'
+
 require 'jsonapi_errorable/version'
 require 'jsonapi_errorable/exception_handler'
 require 'jsonapi_errorable/validatable'
-require 'jsonapi_errorable/serializers/validation_serializer'
+require 'jsonapi_errorable/serializers/serializable_validation'
 
 module JsonapiErrorable
   def self.included(klass)

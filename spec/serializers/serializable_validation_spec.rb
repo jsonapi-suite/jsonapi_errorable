@@ -1,10 +1,10 @@
 require 'spec_helper'
 
-RSpec.describe JsonapiErrorable::Serializers::ValidationSerializer do
+RSpec.describe JsonapiErrorable::Serializers::SerializableValidation do
   let(:errors_hash) { { username: ["can't be blank"] } }
 
-  let(:object) { double.as_null_object }
-  let(:instance) { described_class.new(object) }
+  let(:object) { double(id: 123).as_null_object }
+  let(:instance) { described_class.new(object: object) }
 
   before do
     allow(instance).to receive(:activerecord?) { true }
@@ -15,7 +15,7 @@ RSpec.describe JsonapiErrorable::Serializers::ValidationSerializer do
   end
 
   describe '#errors' do
-    subject { instance.errors }
+    subject { instance.as_jsonapi[:attributes][:errors] }
 
     before do
       allow(object).to receive(:respond_to?).with(:username) { true }

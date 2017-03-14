@@ -8,6 +8,7 @@ require 'pry-byebug'
 require 'jsonapi_errorable'
 
 require File.expand_path("../support/basic_rails_app.rb",  __FILE__)
+require "action_controller/railtie"
 require 'rspec/rails'
 Rails.application = BasicRailsApp.generate
 
