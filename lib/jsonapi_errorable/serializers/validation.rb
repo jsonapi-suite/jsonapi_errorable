@@ -1,17 +1,21 @@
 module JsonapiErrorable
   module Serializers
-    class SerializableValidation < JSONAPI::Serializable::Resource
-      type :validation_errors
+    class Validation
+      attr_reader :object
 
-      attribute :errors do
-        @object.errors.to_hash.map do |attribute, messages|
+      def initialize(object)
+        @object = object
+      end
+
+      def errors
+        object.errors.to_hash.map do |attribute, messages|
           messages.map do |message|
             {
               code:   'unprocessable_entity',
               status: '422',
               title: 'Validation Error',
               detail: "#{attribute.capitalize} #{message}",
-              source: { pointer: pointer_for(@object, attribute) },
+              source: { pointer: pointer_for(object, attribute) },
               meta:   { attribute: attribute, message: message }
             }
           end
@@ -21,12 +25,12 @@ module JsonapiErrorable
       def relationship?(name)
         return false unless activerecord?
 
-        relation_names = @object.class.reflect_on_all_associations.map(&:name)
+        relation_names = object.class.reflect_on_all_associations.map(&:name)
         relation_names.include?(name)
       end
 
       def attribute?(name)
-        @object.respond_to?(name)
+        object.respond_to?(name)
       end
 
       private

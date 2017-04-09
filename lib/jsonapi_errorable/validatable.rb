@@ -1,11 +1,11 @@
 module JsonapiErrorable
   module Validatable
     def render_errors_for(record)
+      validation = Serializers::Validation.new(record)
+
       render \
-        json: record,
-        status: :unprocessable_entity,
-        serializer: Serializers::SerializableValidation,
-        adapter: :attributes
+        json: validation.errors,
+        status: :unprocessable_entity
     end
   end
 end
