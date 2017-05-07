@@ -3,7 +3,7 @@ module JsonapiErrorable
     class Validation
       attr_reader :object
 
-      def initialize(object, relationship_params, relationship_message = {})
+      def initialize(object, relationship_params = {}, relationship_message = {})
         @object = object
         @relationship_params = relationship_params || {}
         @relationship_message = relationship_message

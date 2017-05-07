@@ -18,10 +18,14 @@ RSpec.describe JsonapiErrorable::Serializers::Validation do
     subject { instance.errors }
 
     before do
-      allow(object).to receive(:respond_to?).with(:username) { true }
+      allow(object).to receive(:respond_to?).with(:errors) { true }
     end
 
     context 'when the error is on an attribute' do
+      before do
+        allow(object).to receive(:respond_to?).with(:username) { true }
+      end
+
       it 'renders valid JSONAPI error format' do
         expect(subject).to eq(
           [
