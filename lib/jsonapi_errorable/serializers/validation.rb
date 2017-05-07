@@ -33,7 +33,7 @@ module JsonapiErrorable
       end
 
       def relationship?(name)
-        return false unless activerecord?
+        return false unless activemodel?
 
         relation_names = object.class.reflect_on_all_associations.map(&:name)
         relation_names.include?(name)
@@ -56,8 +56,8 @@ module JsonapiErrorable
         end
       end
 
-      def activerecord?
-        object.is_a?(ActiveRecord::Base)
+      def activemodel?
+        object.class.respond_to?(:reflect_on_all_associations)
       end
 
       def relationship_errors(relationship_params)

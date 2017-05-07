@@ -7,7 +7,7 @@ RSpec.describe JsonapiErrorable::Serializers::Validation do
   let(:instance) { described_class.new(object) }
 
   before do
-    allow(instance).to receive(:activerecord?) { true }
+    allow(instance).to receive(:activemodel?) { true }
     allow(object.class)
       .to receive(:reflect_on_all_associations)
       .and_return([double(name: :pets)])
@@ -65,7 +65,7 @@ RSpec.describe JsonapiErrorable::Serializers::Validation do
 
       context 'but the object is not activerecord' do
         before do
-          allow(instance).to receive(:activerecord?) { false }
+          allow(instance).to receive(:activemodel?) { false }
           allow(object).to receive(:respond_to?).with(:pets) { true }
         end
 
@@ -150,7 +150,7 @@ RSpec.describe JsonapiErrorable::Serializers::Validation do
 
     context 'when not activerecord' do
       before do
-        allow(instance).to receive(:activerecord?) { false }
+        allow(instance).to receive(:activemodel?) { false }
       end
 
       it { is_expected.to be(false) }
