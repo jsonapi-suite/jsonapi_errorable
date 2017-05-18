@@ -150,10 +150,10 @@ You may want your tests to actually raise errors instead of returning error JSON
 
 ```ruby
 before :each do
-  JsonapiErrorable.disabled!
+  JsonapiErrorable.disable!
 end
 
 it 'renders correct error response' do
-  JsonapiErrorable.enabled! # enabled just for this test
+  JsonapiErrorable.enable! # enabled just for this test
 end
 ```
