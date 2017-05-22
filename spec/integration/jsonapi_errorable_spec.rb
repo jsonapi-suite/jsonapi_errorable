@@ -84,6 +84,11 @@ RSpec.describe 'jsonapi_errorable', type: :controller do
   end
 
   context 'when the error is registered' do
+    it 'is registered' do
+      registered = controller.registered_exception?(CustomStatusError.new)
+      expect(registered).to eq true
+    end
+
     context 'with custom status' do
       before do
         raises(CustomStatusError, 'some message')
