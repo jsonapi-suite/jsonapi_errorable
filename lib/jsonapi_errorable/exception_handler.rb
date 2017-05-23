@@ -4,6 +4,7 @@ module JsonapiErrorable
       @status  = options[:status]
       @title   = options[:title]
       @message = options[:message]
+      @meta    = options[:meta]
       @log     = options[:log]
     end
 
@@ -33,7 +34,8 @@ module JsonapiErrorable
     end
 
     def meta(error)
-      {}
+      return {} unless @meta.respond_to?(:call)
+      @meta.call(error)
     end
 
     def error_payload(error)

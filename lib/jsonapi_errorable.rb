@@ -55,6 +55,10 @@ module JsonapiErrorable
     self.class.default_exception_handler
   end
 
+  def registered_exception?(e)
+    self.class._errorable_registry.key?(e.class)
+  end
+
   module ClassMethods
     def register_exception(klass, options = {})
       exception_klass = options[:handler] || default_exception_handler

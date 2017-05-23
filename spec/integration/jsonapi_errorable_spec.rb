@@ -4,6 +4,7 @@ class CustomStatusError < StandardError;end
 class CustomTitleError < StandardError;end
 class MessageTrueError < StandardError;end
 class MessageProcError < StandardError;end
+class MetaProcError < StandardError;end
 class LogFalseError < StandardError;end
 class CustomHandlerError < StandardError;end
 class SpecialPostError < StandardError;end
@@ -21,6 +22,7 @@ class ApplicationController < ActionController::Base
   register_exception CustomTitleError,   title: 'My Title'
   register_exception MessageTrueError,   message: true
   register_exception MessageProcError,   message: ->(e) { e.class.name.upcase }
+  register_exception MetaProcError,      meta: ->(e) { { class_name: e.class.name.upcase } }
   register_exception LogFalseError,      log: false
   register_exception CustomHandlerError, handler: CustomErrorHandler
 
@@ -82,6 +84,11 @@ RSpec.describe 'jsonapi_errorable', type: :controller do
   end
 
   context 'when the error is registered' do
+    it 'is registered' do
+      registered = controller.registered_exception?(CustomStatusError.new)
+      expect(registered).to eq true
+    end
+
     context 'with custom status' do
       before do
         raises(CustomStatusError, 'some message')
@@ -125,6 +132,17 @@ RSpec.describe 'jsonapi_errorable', type: :controller do
       it 'shows custom error detail' do
         get :index
         expect(error['detail']).to eq('MESSAGEPROCERROR')
+      end
+    end
+
+    context 'with meta as proc' do
+      before do
+        raises(MetaProcError, 'some_error')
+      end
+
+      it 'shows custom error detail' do
+        get :index
+        expect(error['meta']).to match('class_name' => 'METAPROCERROR')
       end
     end
 
