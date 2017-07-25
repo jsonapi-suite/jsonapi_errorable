@@ -1,13 +1,17 @@
 module JsonapiErrorable
   module Validatable
-    # @param relationships: nil [Hash] list of relationships to be serialized as errors
+    # @param relationships: nil [ Hash or FalseClass ] list of relationships whose errors should be serialized
+    #   Defaults to the deserialized data.relationships of Json:api Payload
     # @param record [ ActiveModel ] Object that implements ActiveModel
     def render_errors_for(record, relationships: nil)
-      validation = Serializers::Validation.new(
-        record,
-        relationships || deserialized_params.relationships
-      )
-      
+      relationships =
+        if relationships == false
+          {}
+        else
+          relationships || deserialized_params.relationships
+        end
+
+      validation = Serializers::Validation.new(record, relationships)
 
       render \
         json: { errors: validation.errors },
