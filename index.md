@@ -16,8 +16,6 @@ class ApplicationController < ActionController::Base
 end
 ```
 
-**Note**: This gem requires `active_model_serializers`, which overrides `render`.
-
 ### Global Error Handling
 
 Once installed, all errors will return a valid error response. `raise "foo"` would render:
