@@ -16,11 +16,18 @@ module JsonapiErrorable
           messages.map do |message|
             meta = { attribute: attribute, message: message }.merge(@relationship_message)
             meta = { relationship: meta } if @relationship_message.present?
+
+            detail = "#{attribute.capitalize} #{message}"
+
+            if attribute.to_s.downcase == 'base'
+              detail = message
+            end
+
             {
               code:   'unprocessable_entity',
               status: '422',
               title: 'Validation Error',
-              detail: "#{attribute.capitalize} #{message}",
+              detail: detail,
               source: { pointer: pointer_for(object, attribute) },
               meta:   meta
             }

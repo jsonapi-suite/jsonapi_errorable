@@ -43,6 +43,32 @@ RSpec.describe JsonapiErrorable::Serializers::Validation do
           ]
         )
       end
+
+      context 'when the error attribute is "base"' do
+        let(:errors_hash) { { base: ["Model is invalid"] } }
+
+        before do
+          allow(object).to receive(:respond_to?).with(:base) { true }
+        end
+
+        it 'should not render the attribute in the message detail' do
+          expect(subject).to eq(
+            [
+              {
+                code:  'unprocessable_entity',
+                status: '422',
+                title: "Validation Error",
+                detail: "Model is invalid",
+                source: { pointer: '/data/attributes/base' },
+                meta: {
+                  attribute: :base,
+                  message: "Model is invalid"
+                }
+              }
+            ]
+          )
+        end
+      end
     end
 
     context 'when the error is on a relationship' do
