@@ -22,7 +22,6 @@ RSpec.describe JsonapiErrorable::Serializers::Validation do
 
     before do
       allow(object).to receive(:respond_to?).with(:errors) { true }
-      allow(object.errors).to receive(:respond_to?).with(:full_message) { true }
     end
 
     context 'when the error is on an attribute' do
