@@ -17,11 +17,8 @@ module JsonapiErrorable
             meta = { attribute: attribute, message: message }.merge(@relationship_message)
             meta = { relationship: meta } if @relationship_message.present?
 
-            detail = "#{attribute.capitalize} #{message}"
-
-            if attribute.to_s.downcase == 'base'
-              detail = message
-            end
+            detail = object.errors.full_message(attribute, message)
+            detail = message if attribute.to_s.downcase == 'base'
 
             {
               code:   'unprocessable_entity',
