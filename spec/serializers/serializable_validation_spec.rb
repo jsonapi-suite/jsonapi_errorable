@@ -1,7 +1,9 @@
 require 'spec_helper'
 
 RSpec.describe JsonapiErrorable::Serializers::Validation do
-  let(:errors_hash) { { username: ["can't be blank"] } }
+  let(:attribute) { :username }
+  let(:message) { "can't be blank" }
+  let(:errors_hash) { { attribute => [message] } }
 
   let(:object) { double(id: 123).as_null_object }
   let(:instance) { described_class.new(object) }
@@ -12,6 +14,7 @@ RSpec.describe JsonapiErrorable::Serializers::Validation do
       .to receive(:reflect_on_all_associations)
       .and_return([double(name: :pets)])
     allow(object).to receive_message_chain(:errors, :to_hash) { errors_hash }
+    allow(object).to receive_message_chain(:errors, :full_message).with(attribute, message) { "#{attribute.capitalize} #{message}" }
   end
 
   describe '#errors' do
@@ -23,7 +26,7 @@ RSpec.describe JsonapiErrorable::Serializers::Validation do
 
     context 'when the error is on an attribute' do
       before do
-        allow(object).to receive(:respond_to?).with(:username) { true }
+        allow(object).to receive(:respond_to?).with(attribute) { true }
       end
 
       it 'renders valid JSONAPI error format' do
@@ -45,10 +48,11 @@ RSpec.describe JsonapiErrorable::Serializers::Validation do
       end
 
       context 'when the error attribute is "base"' do
-        let(:errors_hash) { { base: ["Model is invalid"] } }
+        let(:attribute) { :base }
+        let(:message) { "Model is invalid" }
 
         before do
-          allow(object).to receive(:respond_to?).with(:base) { true }
+          allow(object).to receive(:respond_to?).with(attribute) { true }
         end
 
         it 'should not render the attribute in the message detail' do
@@ -72,7 +76,8 @@ RSpec.describe JsonapiErrorable::Serializers::Validation do
     end
 
     context 'when the error is on a relationship' do
-      let(:errors_hash) { { pets: ["is invalid"] } }
+      let(:attribute) { :pets }
+      let(:message) { "is invalid" }
 
       it 'puts the source pointer on relationships' do
         expect(subject).to eq(
@@ -92,7 +97,7 @@ RSpec.describe JsonapiErrorable::Serializers::Validation do
       context 'but the object is not activerecord' do
         before do
           allow(instance).to receive(:activemodel?) { false }
-          allow(object).to receive(:respond_to?).with(:pets) { true }
+          allow(object).to receive(:respond_to?).with(attribute) { true }
         end
 
         it 'places the error on attribute' do
@@ -112,7 +117,7 @@ RSpec.describe JsonapiErrorable::Serializers::Validation do
 
         context 'but the object does not respond to this property' do
           before do
-            allow(object).to receive(:respond_to?).with(:pets) { false }
+            allow(object).to receive(:respond_to?).with(attribute) { false }
           end
 
           it 'defaults to relationship' do
@@ -134,10 +139,11 @@ RSpec.describe JsonapiErrorable::Serializers::Validation do
     end
 
     context 'when the error is neither a relationship or attribute of the object' do
-      let(:errors_hash) { { :'foo.bar' => ["is invalid"] } }
+      let(:attribute) { :'foo.bar' }
+      let(:message) { "is invalid" }
 
       before do
-        allow(object).to receive(:respond_to?).with(:'foo.bar') { false }
+        allow(object).to receive(:respond_to?).with(attribute) { false }
       end
 
       it 'puts the source pointer on relationships' do
