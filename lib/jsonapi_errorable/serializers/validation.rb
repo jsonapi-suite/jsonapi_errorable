@@ -17,11 +17,8 @@ module JsonapiErrorable
             error_symbol = error_hash[:error]
             message = generate_message(attribute, error_symbol)
 
-            if @relationship_message.present?
-              meta = { relationship: meta }
-            else
-              meta = { attribute: attribute, message: message, code: error_symbol }
-            end
+            meta = { attribute: attribute, message: message, code: error_symbol }
+            meta = { relationship: meta } if @relationship_message.present?
 
             detail = object.errors.full_message(attribute, message)
             detail = message if attribute.to_s.downcase == 'base'
