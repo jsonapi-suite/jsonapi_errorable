@@ -12,9 +12,12 @@ module JsonapiErrorable
       def errors
         return [] unless object.respond_to?(:errors)
 
-        all_errors = object.errors.to_hash.map do |attribute, messages|
-          messages.map do |message|
-            meta = { attribute: attribute, message: message }.merge(@relationship_message)
+        all_errors = object.errors.details.map do |attribute, error_symbols|
+          error_symbols.map do |error_hash|
+            error_symbol = error_hash[:error]
+            message = object.errors.generate_message(attribute, error_symbol)
+
+            meta = { attribute: attribute, message: message, code: error_symbol }
             meta = { relationship: meta } if @relationship_message.present?
 
             detail = object.errors.full_message(attribute, message)
