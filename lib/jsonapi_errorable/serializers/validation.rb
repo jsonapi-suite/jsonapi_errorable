@@ -15,7 +15,7 @@ module JsonapiErrorable
         all_errors = object.errors.details.map do |attribute, error_symbols|
           error_symbols.map do |error_hash|
             error_symbol = error_hash[:error]
-            message = generate_message(attribute, error_symbol)
+            message = object.errors.generate_message(attribute, error_symbol)
 
             meta = { attribute: attribute, message: message, code: error_symbol }
             meta = { relationship: meta } if @relationship_message.present?
