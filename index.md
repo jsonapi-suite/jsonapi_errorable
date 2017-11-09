@@ -59,7 +59,42 @@ Assuming the Post's `title` was missing, this would render:
       title: 'Validation Error',
       detail: "Title can't be blank",
       source: { pointer: '/data/attributes/title' },
-      meta: { attribute: 'title', message: "can't be blank"
+      meta: {
+        attribute: 'title',
+        message: "can't be blank"
+        code: 'blank'
+      }
+    }
+  ]
+}
+```
+
+This will work for any PORO including [ActiveModel::Validations](http://api.rubyonrails.org/classes/ActiveModel/Validations.html)
+
+*Note: 'meta/code' is only available in ActiveModel >= 5*
+
+#### Nested Validation Error Handing
+
+We use the `meta` section of the error payload handle nested relationships. Let's say we were [sideposting](https://jsonapi-suite.github.io/jsonapi_suite/concepts#sideposting) a comment that had a validation error on `body`.  You'd get back:
+
+```ruby
+{
+  errors: [
+    {
+      code: 'unprocessable_entity',
+      status: '422',
+      title: 'Validation Error',
+      detail: "Body can't be blank",
+      source: { pointer: '/data/attributes/body' },
+      meta: {
+        relationship: {
+          attribute: 'body',
+          message: "can't be blank"
+          code: 'blank'
+          id: '123',
+          type: 'comments'
+        }
+      }
     }
   ]
 }
