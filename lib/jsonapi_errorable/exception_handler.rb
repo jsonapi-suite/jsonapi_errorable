@@ -1,5 +1,7 @@
 module JsonapiErrorable
   class ExceptionHandler
+    attr_accessor :show_raw_error
+
     def initialize(options = {})
       @status  = options[:status]
       @title   = options[:title]
@@ -34,8 +36,18 @@ module JsonapiErrorable
     end
 
     def meta(error)
-      return {} unless @meta.respond_to?(:call)
-      @meta.call(error)
+      {}.tap do |meta_payload|
+        if @meta.respond_to?(:call)
+          meta_payload.merge!(@meta.call(error))
+        end
+
+        if show_raw_error
+          meta_payload[:__raw_error__] = {
+            message: error.message,
+            backtrace: error.backtrace.join("\n")
+          }
+        end
+      end
     end
 
     def error_payload(error)

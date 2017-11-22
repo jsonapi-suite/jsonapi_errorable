@@ -41,10 +41,11 @@ module JsonapiErrorable
     @logger = logger
   end
 
-  def handle_exception(e)
+  def handle_exception(e, show_raw_error: false)
     raise e if JsonapiErrorable.disabled?
 
     exception_klass = self.class._errorable_registry[e.class] || default_exception_handler.new
+    exception_klass.show_raw_error = show_raw_error
     exception_klass.log(e)
     json   = exception_klass.error_payload(e)
     status = exception_klass.status_code(e)
