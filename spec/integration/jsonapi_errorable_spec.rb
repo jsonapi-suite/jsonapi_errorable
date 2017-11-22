@@ -27,7 +27,11 @@ class ApplicationController < ActionController::Base
   register_exception CustomHandlerError, handler: CustomErrorHandler
 
   rescue_from Exception do |e|
-    handle_exception(e)
+    handle_exception(e, show_raw_error: show_raw_error?)
+  end
+
+  def show_raw_error?
+    false
   end
 end
 
@@ -80,6 +84,24 @@ RSpec.describe 'jsonapi_errorable', type: :controller do
           'meta'   => {}
         ]
       })
+    end
+
+    context 'and show_raw_error is true' do
+      before do
+        allow(controller).to receive(:show_raw_error?) { true }
+      end
+
+      it 'renders the raw error in meta' do
+        get :index
+
+        meta = json['errors'][0]['meta']
+        expect(meta).to have_key('__raw_error__')
+        raw = meta['__raw_error__']
+        expect(raw['message']).to eq('some_error')
+        backtrace = raw['backtrace']
+        expect(backtrace.length).to be > 0
+        expect(backtrace).to include("\n")
+      end
     end
   end
 

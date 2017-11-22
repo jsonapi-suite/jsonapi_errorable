@@ -1,7 +1,7 @@
 PATH
   remote: ..
   specs:
-    jsonapi_errorable (0.7.0)
+    jsonapi_errorable (0.8.0)
       jsonapi-serializable (~> 0.1)
 
 GEM
