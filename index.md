@@ -120,6 +120,16 @@ Available options are:
 * `log`: Pass `false` to avoid logging the error
 * `message`: Pass `true` to render the error's message directly. Alternatively, this can accept a proc, e.g. `register_exception FooError, message: ->(e) { e.message.upcase }`
 
+### Showing Raw Errors
+
+You may want to render the actual error message and backtrace - for instance, if the user is an admin, or if `Rails.env.staging?`. In this case:
+
+```ruby
+handle_exception(e, show_raw_error: current_user.admin?)
+```
+
+This will add `__raw_error__` to the `meta` section of the payload, containing the message and backtrace.
+
 ### Custom Exception Handler
 
 The final option `register_exception` accepts is `handler`. Here you can inject your own error handling class that customizes [JsonapiErrorable::ExceptionHandler](https://bbgithub.dev.bloomberg.com/InfrastructureExperience/jsonapi_errorable/blob/master/lib/jsonapi_errorable/exception_handler.rb). For example:
