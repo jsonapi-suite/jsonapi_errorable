@@ -100,7 +100,7 @@ RSpec.describe 'jsonapi_errorable', type: :controller do
         expect(raw['message']).to eq('some_error')
         backtrace = raw['backtrace']
         expect(backtrace.length).to be > 0
-        expect(backtrace).to include("\n")
+        expect(backtrace).to be_kind_of(Array)
       end
     end
   end
