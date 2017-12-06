@@ -44,7 +44,7 @@ module JsonapiErrorable
         if show_raw_error
           meta_payload[:__raw_error__] = {
             message: error.message,
-            backtrace: error.backtrace.join("\n")
+            backtrace: error.backtrace
           }
         end
       end
