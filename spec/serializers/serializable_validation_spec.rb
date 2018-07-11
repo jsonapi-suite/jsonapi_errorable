@@ -6,7 +6,7 @@ RSpec.describe JsonapiErrorable::Serializers::Validation do
     Class.new do
       def self.name;'Dummy';end # required for anonymous class
       # users
-      attr_accessor :id, :username, :pets
+      attr_accessor :id, :username, :pets, :friend
       # pets
       attr_accessor :name, :favorite_toy
       # toys
@@ -183,6 +183,65 @@ RSpec.describe JsonapiErrorable::Serializers::Validation do
             code: 'is invalid'
           }
         }])
+      end
+    end
+
+    context 'when the error is on a relationship shared by the primary and sideposted object' do
+      let(:relationship_params) do
+        {
+          pets: [{
+            meta: {
+                temp_id: nil,
+                method: :update,
+                jsonapi_type: 'pets'
+            },
+            attributes: {
+              friend_id: 1
+            },
+            relationships: {
+              friend: {
+                meta: {
+                    temp_id: nil,
+                    method: :update,
+                    jsonapi_type: 'friends'
+                },
+                attributes: {},
+                relationships: {}
+              }
+            }
+          }]
+        }
+      end
+
+      let(:instance) { described_class.new(object, relationship_params) }
+
+      let(:friend) { klass.new }
+      let(:pet) { klass.new(friend: friend) }
+
+      before do
+        object.friend = friend
+        pet.errors.add(:friend, :forbidden, message: "is invalid for some reason.")
+        object.pets = [pet]
+      end
+
+      it 'treats the error as both an attribute and relationship?' do
+        assert_error(subject[0], {
+            code:  'unprocessable_entity',
+            status: '422',
+            title: 'Validation Error',
+            detail: "Friend is invalid for some reason.",
+            source: { pointer: '/data/attributes/friend' },
+            meta: {
+                relationship: {
+                    attribute: :friend,
+                    message: "is invalid for some reason.",
+                    code: :forbidden,
+                    name: :pets,
+                    id: nil,
+                    type: 'pets'
+                }
+            }
+        })
       end
     end
 
