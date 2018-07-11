@@ -4,6 +4,7 @@ source 'https://rubygems.org'
 gemspec
 
 group :test do
+  gem 'activemodel'
   gem 'appraisal'
   gem 'pry'
   gem 'pry-byebug'
