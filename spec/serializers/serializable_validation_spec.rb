@@ -186,6 +186,82 @@ RSpec.describe JsonapiErrorable::Serializers::Validation do
       end
     end
 
+    context 'when error is on a relationship that has the same relationship as the root object' do
+      let(:relationship_params) do
+         {
+             friend: [{
+                          meta: {
+                              temp_id: 1,
+                              method: :update,
+                              jsonapi_type: 'friends'
+                          },
+                          attributes: {},
+                          relationships: {
+                              pets: [{
+                                         meta: {
+                                             temp_id: 2,
+                                             method: :update,
+                                             jsonapi_type: 'pets'
+                                         },
+                                         attributes: {
+                                             friend_id: 1
+                                         },
+                                         relationships: {}
+                                     }],
+
+                          }
+                      }],
+
+             pets: [{
+               meta: {
+                   temp_id: 3,
+                   method: :update,
+                   jsonapi_type: 'pets'
+               },
+               attributes: {
+                   friend_id: 1
+               },
+               relationships: {}
+           }]
+        }
+      end
+
+      let(:instance) { described_class.new(object, relationship_params) }
+      let(:objects_friend) { klass.new }
+      let(:pet) { klass.new }
+      let(:objects_pet) { klass.new }
+
+      before do
+        pet.instance_variable_set(:@_jsonapi_temp_id, 2)
+        objects_friend.instance_variable_set(:@_jsonapi_temp_id, 1)
+        objects_pet.instance_variable_set(:@_jsonapi_temp_id, 3)
+        objects_friend.pets = [pet]
+        object.friend = objects_friend
+        pet.errors.add(:friend, :forbidden, message: "is invalid for some reason.")
+        object.pets = [objects_pet]
+      end
+
+      it 'treats the error as both an attribute and relationship?' do
+        assert_error(subject[0], {
+            code:  'unprocessable_entity',
+            status: '422',
+            title: 'Validation Error',
+            detail: "Friend is invalid for some reason.",
+            source: { pointer: '/data/attributes/friend' },
+            meta: {
+                relationship: {
+                    attribute: :friend,
+                    message: "is invalid for some reason.",
+                    code: :forbidden,
+                    name: :pets,
+                    type: 'pets',
+                    :"temp-id"=>2
+                }
+            }
+        })
+      end
+    end
+
     context 'when the error is on a relationship shared by the primary and sideposted object' do
       let(:relationship_params) do
         {
