@@ -123,7 +123,6 @@ module JsonapiErrorable
             end
 
             yield name, relationship_object, related_payload
-            relationship_errors(related_payload[:relationships])
           end
         end
       end
