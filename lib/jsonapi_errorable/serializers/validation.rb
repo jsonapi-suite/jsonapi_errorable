@@ -1,4 +1,4 @@
-module GraphitiErrors
+module JsonapiErrorable
   module Serializers
     class Validation
       attr_reader :object
