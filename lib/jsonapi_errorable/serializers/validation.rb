@@ -1,4 +1,4 @@
-module JsonapiErrorable
+module GraphitiErrors
   module Serializers
     class Validation
       attr_reader :object
@@ -30,7 +30,7 @@ module JsonapiErrorable
         return [] unless object.respond_to?(:errors)
 
         all_errors = attribute_errors
-        all_errors |= relationship_errors(@relationship_payloads)
+        all_errors |= relationship_errors(object, @relationship_payloads)
         all_errors
       end
 
@@ -105,11 +105,11 @@ module JsonapiErrorable
         object.class.respond_to?(:reflect_on_all_associations)
       end
 
-      def traverse_relationships(relationship_params)
+      def traverse_relationships(model, relationship_params)
         return unless relationship_params
 
         relationship_params.each_pair do |name, payload|
-          relationship_objects = Array(@object.send(name))
+          relationship_objects = Array(model.send(name))
 
           relationship_objects.each do |relationship_object|
             related_payload = payload
@@ -123,14 +123,14 @@ module JsonapiErrorable
             end
 
             yield name, relationship_object, related_payload
-            relationship_errors(related_payload[:relationships])
+            relationship_errors(relationship_object, related_payload[:relationships])
           end
         end
       end
 
-      def relationship_errors(relationship_payloads)
+      def relationship_errors(model, relationship_payloads)
         errors = []
-        traverse_relationships(relationship_payloads) do |name, model, payload|
+        traverse_relationships(model, relationship_payloads) do |name, model, payload|
           meta = {}.tap do |hash|
             hash[:name] = name
             hash[:type] = payload[:meta][:jsonapi_type]
