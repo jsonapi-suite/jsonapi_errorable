@@ -13,6 +13,7 @@ module JsonapiErrorable
       end
 
       def self.inherited(subklass)
+        super
         subklass._errorable_registry = self._errorable_registry.dup
       end
     end
